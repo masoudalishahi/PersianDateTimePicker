@@ -1,0 +1,74 @@
+plugins {
+    id 'com.android.library'
+    id 'org.jetbrains.kotlin.android'
+    id 'maven-publish'
+}
+
+android {
+    namespace 'com.masoud.persiandatetimepicker'
+    compileSdk 34
+
+    defaultConfig {
+        minSdk 21
+        targetSdk 34
+        versionCode 1
+        versionName "1.0.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+    kotlinOptions {
+        jvmTarget = '17'
+    }
+    sourceSets {
+        main {
+            res {
+                srcDirs 'src/main/res', 'src/main/java/com/masoud/persiandatetimepicker/datepicker/res', 'src/main/java/com/masoud/persiandatetimepicker/timepicker/res'
+            }
+        }
+    }
+}
+
+dependencies {
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.appcompat)
+    implementation libs.material
+    implementation libs.persiandate
+}
+
+afterEvaluate {
+    publishing {
+        publications {
+            release(MavenPublication) {
+                from components.release
+
+                groupId = 'com.masoud.persiandatetimepicker'
+                artifactId = 'persiandatetimepicker'
+                version = '1.0.0'
+
+                pom {
+                    name = 'PrsianDateTimePicker'
+                    description = 'Persian dateTime picker for Android.'
+                    url = 'https://github.com/masoudalishahi/PrsianDateTimePicker'
+
+                    developers {
+                        developer {
+                            name = 'Masoud Alishahi'
+                            email = 'masoud.alishahi10@gmail.com'
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

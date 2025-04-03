@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">PersianDateTimePicker</string>
+    <string name="confirm">تایید</string>
+    <string name="cancel">انصراف</string>
+</resources>
