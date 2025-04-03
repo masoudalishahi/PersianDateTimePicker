@@ -12,7 +12,7 @@ android {
         minSdk 21
         targetSdk 34
         versionCode 1
-        versionName "1.0.0"
+        versionName "1.0.1"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -54,7 +54,7 @@ afterEvaluate {
 
                 groupId = 'com.masoud.persiandatetimepicker'
                 artifactId = 'persiandatetimepicker'
-                version = '1.0.0'
+                version = '1.0.1'
 
                 pom {
                     name = 'PrsianDateTimePicker'
