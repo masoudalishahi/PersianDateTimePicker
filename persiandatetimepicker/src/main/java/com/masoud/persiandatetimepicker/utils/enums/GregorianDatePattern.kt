@@ -6,4 +6,5 @@ enum class GregorianDatePattern(val text: String) {
     PATTERN_3("HH:mm"),
     PATTERN_4("yyyy-MM-dd'T'HH:mm:ss"),
     PATTERN_5("yyyy-MM-dd HH:mm:ss.SSS'Z'"),
+    PATTERN_6("yyyy-MM-dd HH:mm:ss")
 }

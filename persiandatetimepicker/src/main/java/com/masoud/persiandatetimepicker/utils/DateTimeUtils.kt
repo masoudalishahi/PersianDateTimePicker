@@ -360,6 +360,16 @@ fun Date.addTimeToDate(amount: Int, field: Int = Calendar.MINUTE): Date {
     return calendar.time
 }
 
+fun convertDateStringToMillis(dateString: String, format: String = GregorianDatePattern.PATTERN_6.text): Long? {
+    return try {
+        val sdf = SimpleDateFormat(format, Locale.ENGLISH)
+        sdf.timeZone = TimeZones.UTC.timeZone
+        sdf.parse(dateString)?.time
+    } catch (e: Exception) {
+        null
+    }
+}
+
 /**
  * Shows a Persian date picker using `MaterialDatePicker`.
  *
@@ -370,16 +380,25 @@ fun Date.addTimeToDate(amount: Int, field: Int = Calendar.MINUTE): Date {
 fun FragmentManager.showDateTimePicker(
     textView: TextView,
     title: String,
-    showTimePicker: Boolean = false
+    showTimePicker: Boolean = false,
+    initialDateTime: String? = null // 1404/01/16 10:30
 ) {
+
+    val (initialDate, initialTime) =
+        initialDateTime?.split(" ")?.let { it.getOrNull(0) to it.getOrNull(1) } ?: (null to null)
+
+    val grInitialDate = initialDate?.let { getGregorianDateTime(it) }
+
+
 
     val datePicker =
         MaterialDatePicker.Builder.datePicker()
             .setTitleText(title)
             .setEnableHoliday(true)
-            .setPositiveButtonText(R.string.mtrl_picker_confirm)
-            .setNegativeButtonText(R.string.mtrl_picker_cancel)
+            .setPositiveButtonText(R.string.persian_picker_confirm)
+            .setNegativeButtonText(R.string.persian_picker_cancel)
             .setSelection(MaterialDatePicker.todayInUtcMilliseconds())
+            .setSelection(100)
             //.setTheme(R.style.ThemeOverlay_App_DatePicker)
             .build()
 
@@ -391,7 +410,7 @@ fun FragmentManager.showDateTimePicker(
             outputFormat = PersianDatePattern.PATTERN_4
         )
         if (showTimePicker) {
-            textView.showLinearTimePicker(date = persianDate)
+            textView.showLinearTimePicker(date = persianDate, initialTime = initialTime)
         } else {
             textView.text = persianDate
         }
@@ -406,18 +425,22 @@ fun FragmentManager.showDateTimePicker(
  */
 @SuppressLint("DefaultLocale", "SetTextI18n")
 fun TextView.showLinearTimePicker(
-    title: String = this.context.resources.getString(R.string.mtrl_picker_select_time),
+    title: String = this.context.resources.getString(R.string.persian_picker_select_time),
     date: String? = null,
+    initialTime: String? = null // 10:30
 ) {
     val timePicker = TimePickerBuilder(this.context)
-        //.setInitialTime(10, 30)
         .setTitle(title)
         .setOnConfirmListener { selectedTime ->
-            if(date.isNullOrEmpty())
-                this.text = selectedTime
-            else
-                this.text = "$date $selectedTime"
+            this.text = if (date.isNullOrEmpty()) selectedTime else "$date $selectedTime"
         }
+
+    initialTime?.let {
+        val parts = it.split(":")
+        val hour = parts.getOrNull(0)?.toIntOrNull() ?: 0
+        val minute = parts.getOrNull(1)?.toIntOrNull() ?: 0
+        timePicker.setInitialTime(hour, minute)
+    }
     timePicker.show()
 }
 
