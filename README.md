@@ -38,7 +38,7 @@ allprojects {
 2. Add the dependency to your module build.gradle
 
 dependencies {
-    implementation 'com.github.masoudalishahi:PrsianDateTimePicker:1.1.0'
+    implementation 'com.github.masoudalishahi:PrsianDateTimePicker:1.2.0'
 }
 
 ## Usage

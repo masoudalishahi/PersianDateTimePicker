@@ -10,7 +10,7 @@
   <string name="mtrl_picker_date_header_unselected">تاریخ انتخابی</string>
   <string name="mtrl_picker_date_header_selected">%1$s</string>
   <string name="mtrl_picker_confirm">تأیید</string>
-  <string name="mtrl_picker_cancel">لغو</string>
+  <string name="mtrl_picker_cancel">انصراف</string>
   <string name="mtrl_picker_text_input_date_hint">تاریخ</string>
   <string name="mtrl_picker_text_input_date_range_start_hint">تاریخ شروع</string>
   <string name="mtrl_picker_text_input_date_range_end_hint">تاریخ پایان</string>
@@ -38,4 +38,6 @@
   <string name="mtrl_picker_today_description">امروز %1$s</string>
   <string name="mtrl_picker_start_date_description">تاریخ شروع: %1$s</string>
   <string name="mtrl_picker_end_date_description">تاریخ پایان: %1$s</string>
+
+  <string name="mtrl_picker_select_time">انتخاب زمان</string>
 </resources>
