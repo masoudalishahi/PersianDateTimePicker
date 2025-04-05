@@ -360,7 +360,17 @@ fun Date.addTimeToDate(amount: Int, field: Int = Calendar.MINUTE): Date {
     return calendar.time
 }
 
-fun convertDateStringToMillis(dateString: String, format: String = GregorianDatePattern.PATTERN_6.text): Long? {
+/**
+ * Converts a Gregorian date string to its corresponding time in milliseconds.
+ *
+ * @param dateString The date string to be converted (e.g., "2025-04-05 13:45").
+ * @param format The format of the input date string. Defaults to [GregorianDatePattern.PATTERN_7].
+ * @return The time in milliseconds since the Unix epoch, or `null` if parsing fails.
+ */
+fun convertDateStringToMillis(
+    dateString: String,
+    format: String = GregorianDatePattern.PATTERN_7.text
+): Long? {
     return try {
         val sdf = SimpleDateFormat(format, Locale.ENGLISH)
         sdf.timeZone = TimeZones.UTC.timeZone
@@ -376,33 +386,42 @@ fun convertDateStringToMillis(dateString: String, format: String = GregorianDate
  * @param textView The [TextView] where the selected date (and optionally time) will be set.
  * @param title The title to be shown on the date picker dialog.
  * @param showTimePicker If `true`, a time picker will be shown after the user selects a date.
+ * @param jalaliDateTime The jalali date time to be shown on the date picker dialog and time picker dialog.
  */
 fun FragmentManager.showDateTimePicker(
     textView: TextView,
     title: String,
     showTimePicker: Boolean = false,
-    initialDateTime: String? = null // 1404/01/16 10:30
+    jalaliDateTime: String? = null // 1404/01/16 10:30
 ) {
 
     val (initialDate, initialTime) =
-        initialDateTime?.split(" ")?.let { it.getOrNull(0) to it.getOrNull(1) } ?: (null to null)
+        jalaliDateTime?.split(" ")?.let { it.getOrNull(0) to it.getOrNull(1) } ?: (null to null)
 
-    val grInitialDate = initialDate?.let { getGregorianDateTime(it) }
+    val gregorianDate = initialDate?.let {
+        getGregorianDateTime(
+            it,
+            inputFormat = PersianDatePattern.PATTERN_6,
+            outputFormat = GregorianDatePattern.PATTERN_7
+        )
+    }
 
-
+    val defaultSelection = gregorianDate?.let {
+        convertDateStringToMillis(it)
+    } ?: MaterialDatePicker.todayInUtcMilliseconds()
 
     val datePicker =
         MaterialDatePicker.Builder.datePicker()
             .setTitleText(title)
             .setEnableHoliday(true)
+            .setSelection(defaultSelection)
             .setPositiveButtonText(R.string.persian_picker_confirm)
             .setNegativeButtonText(R.string.persian_picker_cancel)
-            .setSelection(MaterialDatePicker.todayInUtcMilliseconds())
-            .setSelection(100)
             //.setTheme(R.style.ThemeOverlay_App_DatePicker)
             .build()
 
     datePicker.show(this, datePicker.toString())
+
     datePicker.addOnPositiveButtonClickListener { selectedDate ->
         val gregorianDate = Date(selectedDate)
         val persianDate = getPersianDateTime(
@@ -410,7 +429,15 @@ fun FragmentManager.showDateTimePicker(
             outputFormat = PersianDatePattern.PATTERN_4
         )
         if (showTimePicker) {
-            textView.showLinearTimePicker(date = persianDate, initialTime = initialTime)
+            var hour = 0
+            var minute = 0
+            initialTime?.let {
+                val parts = it.split(":")
+                hour = parts.getOrNull(0)?.toIntOrNull() ?: 0
+                minute = parts.getOrNull(1)?.toIntOrNull() ?: 0
+            }
+
+            textView.showLinearTimePicker(date = persianDate, hour = hour, minute = minute)
         } else {
             textView.text = persianDate
         }
@@ -420,27 +447,25 @@ fun FragmentManager.showDateTimePicker(
 /**
  * Shows a linear (scrollable) Persian-style time picker.
  *
- * @param date An optional Persian date string to prefix the selected time.
  * @param title the title of time picker
+ * @param date An optional Persian date string to prefix the selected time.
+
+ * @param hour the default hour of time picker
+ * @param title the default minute of time picker
  */
 @SuppressLint("DefaultLocale", "SetTextI18n")
 fun TextView.showLinearTimePicker(
     title: String = this.context.resources.getString(R.string.persian_picker_select_time),
     date: String? = null,
-    initialTime: String? = null // 10:30
+    hour: Int = 0,
+    minute: Int = 0
 ) {
     val timePicker = TimePickerBuilder(this.context)
+        .setInitialTime(hour, minute)
         .setTitle(title)
         .setOnConfirmListener { selectedTime ->
             this.text = if (date.isNullOrEmpty()) selectedTime else "$date $selectedTime"
         }
-
-    initialTime?.let {
-        val parts = it.split(":")
-        val hour = parts.getOrNull(0)?.toIntOrNull() ?: 0
-        val minute = parts.getOrNull(1)?.toIntOrNull() ?: 0
-        timePicker.setInitialTime(hour, minute)
-    }
     timePicker.show()
 }
 
