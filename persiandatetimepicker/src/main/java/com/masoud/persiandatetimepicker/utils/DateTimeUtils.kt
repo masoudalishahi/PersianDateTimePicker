@@ -386,14 +386,13 @@ fun convertDateStringToMillis(
  * @param textView The [TextView] where the selected date (and optionally time) will be set.
  * @param title The title to be shown on the date picker dialog.
  * @param showTimePicker If `true`, a time picker will be shown after the user selects a date.
- * @param jalaliDateTime The jalali date time to be shown on the date picker dialog and time picker dialog.
  */
 fun FragmentManager.showDateTimePicker(
     textView: TextView,
     title: String,
-    showTimePicker: Boolean = false,
-    jalaliDateTime: String? = null // 1404/01/16 10:30
+    showTimePicker: Boolean = false
 ) {
+    val jalaliDateTime = textView.text
 
     val (initialDate, initialTime) =
         jalaliDateTime?.split(" ")?.let { it.getOrNull(0) to it.getOrNull(1) } ?: (null to null)
